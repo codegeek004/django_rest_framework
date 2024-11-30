@@ -1,5 +1,20 @@
 from rest_framework import serializers
 from quickstart.models import Quickstart, LANGUAGE_CHOICES, STYLE_CHOICES
+from django.contrib.auth.models import User 
+
+#Modelserializer is simply shortcut for creating serializer class.
+class QuickstartSerializer(serializers.ModelSerializer):
+	owner = serializers.ReadOnlyField(source='owner.username')
+	class Meta:
+		model = Quickstart
+		fields = ['id', 'owner', 'title', 'code', 'linenos', 'language', 'style']
+
+class UserSerializer(serializers.ModelSerializer):
+	snippets = serializers.PrimaryKeyRelatedField(many=True, queryset=Quickstart.objects.all())
+	class Meta:
+		model = User 
+		fields = ['id', 'username', 'quickstart']
+
 
 # class QuickstartSerializer(serializers.Serializer):
 # 	id = serializers.IntegerField(read_only=True)
@@ -8,9 +23,6 @@ from quickstart.models import Quickstart, LANGUAGE_CHOICES, STYLE_CHOICES
 # 	linenos = serializers.BooleanField(required=False)
 # 	language = serializers.ChoiceField(choices=LANGUAGE_CHOICES, default='python')
 # 	style = serializers.ChoiceField(choices=STYLE_CHOICES, default='friendly')
-
-
-
 
 	# def create(self, validated_data):
 	# 	#Create and return a new `Snippet` instance, given the validated data.
@@ -30,9 +42,4 @@ from quickstart.models import Quickstart, LANGUAGE_CHOICES, STYLE_CHOICES
 	# 	return instance
 
 
-	#Modelserializer dont do anything magical, they are simply shortcut for creating serializer class.
-class QuickstartSerializer(serializers.ModelSerializer):
-    class Meta:
-    	model = Quickstart
-    	fields = ['id', 'title', 'code', 'linenos', 'language', 'style']
-
+	
