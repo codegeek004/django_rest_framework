@@ -3,24 +3,43 @@
 # from rest_framework.parsers import JSONParser
 from quickstart.models import Quickstart
 from quickstart.serializers import QuickstartSerializer
-from rest_framework import status
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from django.http import Http404
+from rest_framework import mixins
+from rest_framework import generics
+##using mixins##
 
-class SnippetList(APIView):
-	#List all snippets or create a new one
-	def get(self, request, format=None):
-		snippets = Quickstart.objects.all()
-		serializer = QuickstartSerializer(snippets, many=True)
-		return Response(serializer.data)
+class SnipperList(mixins.ListModelMixin,
+				  mixins.CreateModelMixin,
+				  mixins.GenericAPIView):
+#the listmodelmixin returns the list of dictionaries for serializing the queryset of objects
+#th createmodelmixin is builtin method for handling post requests.
+	queryset = Quickstart.objects.all()
+	serializer_class = QuickstartSerializer
 
-	def post(self, request, format=None):
-		serializer = QuickstartSerializer(data=request.data)
-		if serializer.is_valid():
-			serializer.save()
-			return Response(serializer.data, status=status.HTTP_201_CREATED)
-		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+	def get(self, request, *args, **kwargs):
+		return self.list(request, *args, **kwargs)
+
+	def post(self, request, *args, **kwargs):
+		return self.create(request, *args, **kwargs)
+
+
+############class based view##############
+# from rest_framework import status
+# from rest_framework.response import Response
+# from django.http import Http404
+# from rest_framework.views import APIView
+# class SnippetList(APIView):
+# 	#List all snippets or create a new one
+# 	def get(self, request, format=None):
+# 		snippets = Quickstart.objects.all()
+# 		serializer = QuickstartSerializer(snippets, many=True)
+# 		return Response(serializer.data)
+
+# 	def post(self, request, format=None):
+# 		serializer = QuickstartSerializer(data=request.data)
+# 		if serializer.is_valid():
+# 			serializer.save()
+# 			return Response(serializer.data, status=status.HTTP_201_CREATED)
+# 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class SnippetDetail(APIView):
