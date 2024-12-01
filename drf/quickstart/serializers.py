@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 
 #Modelserializer is simply shortcut for creating serializer class.
 class QuickstartSerializer(serializers.ModelSerializer):
+	#snippets are associated with the users who created them.
 	owner = serializers.ReadOnlyField(source='owner.username')
 	class Meta:
 		model = Quickstart
@@ -13,7 +14,7 @@ class UserSerializer(serializers.ModelSerializer):
 	snippets = serializers.PrimaryKeyRelatedField(many=True, queryset=Quickstart.objects.all())
 	class Meta:
 		model = User 
-		fields = ['id', 'username', 'quickstart']
+		fields = ['id', 'username', 'snippets']
 
 
 # class QuickstartSerializer(serializers.Serializer):
