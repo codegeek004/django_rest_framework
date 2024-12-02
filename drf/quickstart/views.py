@@ -3,6 +3,7 @@ from quickstart.models import Quickstart
 from quickstart.serializers import QuickstartSerializer, UserSerializer
 from rest_framework import generics, permissions
 from django.views.decorators.csrf import csrf_protect
+from quickstart.permissions import IsOwnerOrReadOnly
 
 
 #most consise code. Other approaches are in the views_tutorial file.
@@ -18,7 +19,8 @@ class SnippetList(generics.ListCreateAPIView):
 # @csrf_protect
 class SnippetDetail(generics.RetrieveUpdateDestroyAPIView):
 	queryset = Quickstart.objects.all()
-	serializer_class = QuickstartSerializer	
+	serializer_class = QuickstartSerializer
+	permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]	
 # @csrf_protect
 class UserList(generics.ListAPIView):
 	queryset = User.objects.all()
